@@ -15,10 +15,14 @@ def main():
     setup_logging()
     iam = boto3.resource('iam')
     all_users = list(iam.users.all())
-    #all_users = all_users[:5]
     with multiprocessing.Pool(32) as pool:
         users_data = pool.map(dump_user, [u.name for u in all_users])
-    yaml.dump({'users': users_data}, sys.stdout, indent=4, default_flow_style=False)
+    data = {'account_id': get_account_id(), 'users': users_data}
+    yaml.dump(data, sys.stdout, indent=4, default_flow_style=False)
+
+
+def get_account_id():
+    return boto3.client('sts').get_caller_identity()['Account']
 
 
 def dump_user(user_name):
