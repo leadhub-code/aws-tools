@@ -3,6 +3,7 @@
 import argparse
 import boto3
 import logging
+import multiprocessing
 from pprint import pprint
 import sys
 import yaml
@@ -15,14 +16,14 @@ def main():
     iam = boto3.resource('iam')
     all_users = list(iam.users.all())
     #all_users = all_users[:5]
-    users_data = []
-    for user in all_users:
-        users_data.append(dump_user(user))
-    #pprint(output)
+    with multiprocessing.Pool(32) as pool:
+        users_data = pool.map(dump_user, [u.name for u in all_users])
     yaml.dump({'users': users_data}, sys.stdout, indent=4, default_flow_style=False)
 
 
-def dump_user(user):
+def dump_user(user_name):
+    iam = boto3.resource('iam')
+    user = iam.User(user_name)
     assert user.user_name == user.name
     return {
         'user_id': user.user_id,
@@ -91,7 +92,7 @@ def dump_user_policy(p):
 
 def setup_logging():
     logging.basicConfig(
-        format='> %(name)-30s %(levelname)5s: %(message)s',
+        format='> [%(process)d] %(name)-30s %(levelname)5s: %(message)s',
         level=logging.INFO)
 
 
