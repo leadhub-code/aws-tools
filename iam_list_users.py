@@ -11,13 +11,17 @@ import yaml
 
 def main():
     p = argparse.ArgumentParser()
+    p.add_argument('--verbose', '-v', action='store_true')
     args = p.parse_args()
-    setup_logging()
+    setup_logging(args.verbose)
     iam = boto3.resource('iam')
     all_users = list(iam.users.all())
     with multiprocessing.Pool(32) as pool:
         users_data = to_dict(pool.map(dump_user, [u.name for u in all_users]))
-    data = {'account_id': get_account_id(), 'iam_users': users_data}
+    data = {
+        'account_id': get_account_id(),
+        'iam_users': users_data,
+    }
     yaml.dump(data, sys.stdout, indent=4, default_flow_style=False)
 
 
@@ -96,10 +100,10 @@ def dump_user_policy(p):
     }
 
 
-def setup_logging():
+def setup_logging(verbose):
     logging.basicConfig(
         format='> [%(process)d] %(name)-26s %(levelname)s: %(message)s',
-        level=logging.INFO)
+        level=logging.INFO if verbose else logging.WARNING)
 
 
 if __name__ == '__main__':
