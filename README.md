@@ -63,6 +63,11 @@ iam_users:
 iam_sync_users.py
 -----------------
 
+This is the same concept as in configuration management tools like Ansible, Puppet or Salt - you manage some
+description of the "ideal state" (target state) and the program/script does all its best to turn it into reality.
+
+I recommend to store the state file in git repository.
+
 Example:
 
 ```shell
