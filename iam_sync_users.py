@@ -67,7 +67,7 @@ def main():
     print()
 
     if not plan:
-        print('No actions needed, target state is already achieved')
+        print('No actions needed, target state is already achieved.')
         return
 
     for n, action in enumerate(plan, start=1):
