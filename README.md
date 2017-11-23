@@ -3,6 +3,9 @@ AWS tools
 
 Here are some scripts I use to make management of the AWS account and resources easier.
 
+This repository is just a playground. No intentions to replace [Terraform](https://www.terraform.io/) :)
+
+
 iam_create_user_access_key.py
 -----------------------------
 
